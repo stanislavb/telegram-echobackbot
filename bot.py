@@ -37,6 +37,8 @@ if __name__ == "__main__":
             if 'message' in update:
                 message = update['message']
                 chat_id = message['chat']['id']
-                api.send_message(chat_id, json.dumps(message))
+                # Maybe we got kicked out of the channel
+                if not 'left_chat_participant' in message:
+                    api.send_message(chat_id, json.dumps(message))
             if update['update_id'] >= offset:
                 offset = update['update_id'] + 1
