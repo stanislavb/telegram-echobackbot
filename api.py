@@ -29,9 +29,7 @@ class API:
         response.raise_for_status()
         content = response.json()
         logger.info('Got response from {}: {}'.format(self.url, content))
-        if not content['ok']:
-            logger.error('API returned error: {}'.format(content['description']))
-        return content['result']
+        return content
 
     def get(self, endpoint, **kwargs):
         return self.request('GET', endpoint, **kwargs)
@@ -39,8 +37,23 @@ class API:
     def post(self, endpoint, **kwargs):
         return self.request('POST', endpoint, **kwargs)
 
+
+class TelegramAPI(API):
+
+    def request(self, method, endpoint, **kwargs):
+        content = super(TelegramAPI, self).request(method, endpoint, **kwargs)
+        if not content['ok']:
+            logger.error('API returned error: {}'.format(content['description']))
+        return content['result']
+
+    def get_me(self):
+        return self.get('getMe')
+
     def get_updates(self, **kwargs):
         return self.get('getUpdates', **kwargs)
 
     def send_message(self, chat_id, text, **kwargs):
         return self.post('sendMessage', chat_id=chat_id, text=text, **kwargs)
+
+    def send_photo(self, chat_id, photo, **kwargs):
+        return self.post('sendPhoto', chat_id=chat_id, photo=photo, **kwargs)
